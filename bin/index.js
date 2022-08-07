@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+const nkplParser = require("./parser.js");
 const yargs = require("yargs");
 const fs = require("fs");
 const { toNamespacedPath } = require("path");
@@ -8,7 +8,7 @@ const usage = "\nUsage: nkpl <file name>\nnamish <file name>";const options = ya
       .help(true)  
       .argv;
 const fileName = String(process.argv[2]);
-
+let bik = ["write", "find", "vary", "import", "export", "modify", "Write", "Find", "Vary", "Import", "Export", "Modify", "showNkplDetails()", "sqrt", "Sqrt", "cbrt", "Cbrt", "printS", "PrintS", "#", "for", "For", "equals", "getVar", "getVary", ";", "function", "{", "}", "/*", "/", "com", "round", "Round", "random", "createFile", "deleteFile"];
 class nkplCompiler {
   constructor(codes) {
     this.codes = codes
@@ -16,27 +16,33 @@ class nkplCompiler {
   tokenize() {
     const length = this.codes.length
     let pos = 0
+    let line = 1;
+    let column = 0;
     let tokens = []
-    const BUILT_IN_KEYWORDS = ["print", "find", "vary", "import", "export", "modify", "Print", "Find", "Vary", "Import", "Export", "Modify", "showNkplDetails()", "sqrt", "Sqrt", "cbrt", "Cbrt", "printS", "PrintS", "#", "for", "For", "equals", "getVar", "getVary", ";", "function", "{", "}", ];
+    let BUILT_IN_KEYWORDS = bik;
     const varChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_()#N;{}'
     while (pos < length) {
       let currentChar = this.codes[pos]
-      if (currentChar === ` ` || currentChar === "\n" || currentChar === `
- ` || currentChar === `
- ` || currentChar === "\
- ") {
+      if (currentChar === " ") {
         pos++
+        column++
         continue
+      }else if(currentChar === "\n"){
+          line++
+          column = 0;
+          pos++
+          continue
       } else if (currentChar === '"') {
         let res = ""
         pos++
+        column++
         while (this.codes[pos] !== '"' && this.codes[pos] !== '\n' && pos < length) {
           res += this.codes[pos]
           pos++
         }
         if (this.codes[pos] !== '"') {
           return {
-            error: `Incomplete String!`
+            error: `Incomplete String at line ${line}:${pos}`
           }
         }
         pos++
@@ -53,7 +59,7 @@ class nkplCompiler {
         }
         if (this.codes[pos] !== '"') {
           return {
-            error: `Incomplete String!`
+            error: `Incomplete String at line ${line}:${pos}!`
           }
         }
         pos++
@@ -75,24 +81,33 @@ class nkplCompiler {
           }
         }
         tokens.push({
-          type: "keyword",
+          type: BUILT_IN_KEYWORDS.includes(res) ? "keyword" : "keyword_custom",
           value: res
         })
       }else if (currentChar === '='){
-        let res = ""
         pos++
-        while (this.codes[pos] !== '"' && this.codes[pos] !== '\n' && pos < length) {
-          res += this.codes[pos]
-          pos++
-        }
-        pos++
+        column++
         tokens.push({
-          type: "varEqualSign",
-          value: res
+          type: "operator",
+          value: "eq"
         })
+      }else if(currentChar === "+"){
+        pos++
+        column++
+        tokens.push({
+          type:"operator",
+          value:"plus"
+        })
+      }else if (currentChar === '/'){
+       pos++
+       column++
+       tokens.push({
+        type: "operator",
+        value: "comment"
+      })
       } else {
         return {
-          error: `Unexpected character ${this.codes[pos]}`
+          error: `Unexpected character ${this.codes[pos]} at line ${line}:${pos}`
         }
       }
     }
@@ -101,150 +116,36 @@ class nkplCompiler {
       tokens
     }
   }
+  
   compile() {
     const {
       tokens,
       error
     } = this.tokenize()
     if (error) {
-      console.log(error)
-      return
+      return console.log(error)
     }
-   for (let codePos = 0; codePos < tokens.length; codePos++) {
     let localSystemVariables = [];
-    if(tokens[codePos].type === "keyword") {
-      let localSystemFunctions = [
-        {
-         
-        }
-      ]
-       if(tokens[codePos].value === "find" || tokens[codePos].value === "Find") {
-        if(tokens[codePos + 1].type === "string") {
-        if(tokens[codePos + 1].value === undefined) {
-          console.error("NKPL unexpected error. Find function can never have an empty mathematical expression.")
-        }else{
-          console.log(eval(tokens[codePos + 1].value));
-        }
-        }else{
-             console.log("unknown error!")
-        }
-      }
-      if(tokens[codePos].value === "showNkplDetails()") {
-        console.log("NKPL is a programming language created by Namish Kumar, a student reading in Class 8 Section C in DAV Public School Balasore of Odisha, India in July 2022. JavaScript is the language using which this language has been created.")
-      }
-      if(tokens[codePos].value === "sqrt" || tokens[codePos].value === "Sqrt") {
-        if(tokens[codePos + 1].type === "string") {
-        if(tokens[codePos + 1].value === undefined) {
-          console.error("NKPL unexpected error. Sqrt / sqrt function can never have an empty number to find the square root. Please input a valid number.")
-        }else{
-          console.log(Math.sqrt(Number(tokens[codePos + 1].value)));
-        }
-        }else{
-             console.log("unknown error!")
-        }
-      }
-      if(tokens[codePos].value === "cbrt" || tokens[codePos].value === "Cbrt") {
-        if(tokens[codePos + 1].type === "string") {
-        if(tokens[codePos + 1].value === undefined) {
-          console.error("NKPL unexpected error. Cbrt / cbrt function can never have an empty number to find the cube root. Please input a valid number.")
-        }else{
-          console.log(Math.cbrt(Number(tokens[codePos + 1].value)));
-        }
-        }else{
-             console.log("unknown error!")
-        }
-      }
-      if(tokens[codePos].value === "printS" || tokens[codePos].value === "PrintS") {
-        if(tokens[codePos + 1].type === "string") {
-        if(tokens[codePos + 1].value === undefined) {
-          console.error("NKPL unexpected error. PrintS only accepts strings.")
-        }else{
-          process.stdout.write(tokens[codePos + 1].value);
-        }
-        }else{
-             console.log("unknown error!")
-        }
-      }
-    } {
-      if(tokens[codePos].value === "vary" || tokens[codePos].value === "Vary") {
-        if(tokens[codePos + 1].type === "string") {
-        if(tokens[codePos + 1].value === undefined) {
-          console.error("NKPL unexpected error.")
-        }else{
-          const mainVaryName = tokens[codePos + 1].value;
-          if(tokens[codePos + 2].type === "keyword") {
-            if(tokens[codePos + 2].value === "equals") {
-              if(tokens[codePos + 3].type === "string") {
-                if(tokens[codePos + 3].value === undefined) {
-                  console.error("NKPL unexpected error.")
-                }else{
-                  const mainVaryValue = tokens[codePos + 3].value;
-                   localSystemVariables.push ({
-                    [mainVaryName]:mainVaryValue
-                   });
-                   
-                }
-              }
-            }
-          }
-        }
-        }else{
-             console.log("unknown error!")
-        }
-      }
-      if(tokens[codePos].value === "print" || tokens[codePos].value === "Print") {
-        if(tokens[codePos + 1].type === "string") {
-          console.log(tokens[codePos + 1].value);
-        }else if(tokens[codePos + 1].type === "keyword"){
-          if(tokens[codePos + 1].value === "getVar" || tokens[codePos + 1].value === "getVary") {
-            if(tokens[codePos + 2].type === "string") {
-            if(tokens[codePos + 2].value === undefined) {
-              console.error("NKPL unexpected error. Variable name can never be undefined!")
-            }else{
-              const indexToGetVarValue = tokens[codePos + 2].value;
-              try {
-              }
-              catch (error) {
-                  console.log(`NKPL Variable Undefined Error: The requested variable ${indexToGetVarValue} is not defined.`);
-              }
-            }
-            }else{
-                 console.log("unknown error!")
-            }
-          }
-         
-        }
-       } 
-       if(tokens[codePos].value === "function" || tokens[codePos].value === "Print") {
-        if(tokens[codePos + 1].type === "string") {
-          console.log(tokens[codePos + 1].value);
-        }else if(tokens[codePos + 1].type === "keyword"){
-          if(tokens[codePos + 1].value === "getVar" || tokens[codePos + 1].value === "getVary") {
-            if(tokens[codePos + 2].type === "string") {
-            if(tokens[codePos + 2].value === undefined) {
-              console.error("NKPL unexpected error. Variable name can never be undefined!")
-            }else{
-              const indexToGetVarValue = tokens[codePos + 2].value;
-              try {
-              }
-              catch (error) {
-                  console.log(`NKPL Variable Undefined Error: The requested variable ${indexToGetVarValue} is not defined.`);
-              }
-            }
-            }else{
-                 console.log("unknown error!")
-            }
-          }
-         
-        }
-       } 
-    }
-    }
-  }
-  }
-    
-fs.readFile(fileName + ".nkpl", 'utf8', function(err, codes){
- new nkplCompiler(codes).compile();
-})
+    fs.writeFile(fileName + ".json", JSON.stringify(tokens), 'utf8', (err) => {
 
-// The end of code //
+      if (err) {
+          console.log(`NKPL Compiling error: Unable to compile your NKPL file!`);
+      } else {
+        const allFileContents = fs.readFileSync(fileName + ".json", 'utf8');
+allFileContents.split(/\r?\n/).forEach(codes =>  {
+  nkplParser.parse(tokens);
+}); 
+      }
+  
+  });
+    }
+  }
+  const allFileContents = fs.readFileSync(fileName + ".nkpl", 'utf8');
+allFileContents.split(/\r?\n/).forEach(codes =>  {
+  new nkplCompiler(codes).compile();
+});  
+/*fs.readFile(fileName + ".nkpl", 'utf8', function(err, codes){
+new nkplCompiler(codes).compile();
+})*/
+
+// The end of NKPL sorce code //
