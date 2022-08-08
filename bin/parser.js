@@ -2,7 +2,6 @@ const { sqrt } = require("mathjs");
 const fs = require("fs");
 const parser = {
   parse:function parse(tokens) {
-    console.log(tokens);
     const nLength = tokens.length;
     let position = 0;
     const vars = {}
