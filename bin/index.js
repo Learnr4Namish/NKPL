@@ -8,7 +8,7 @@ const usage = "\nUsage: nkpl <file name>\nnamish <file name>";const options = ya
       .help(true)  
       .argv;
 const fileName = String(process.argv[2]);
-let bik = ["write", "find", "vary", "import", "export", "modify", "Write", "Find", "Vary", "Import", "Export", "Modify", "showNkplDetails()", "sqrt", "Sqrt", "cbrt", "Cbrt", "printS", "PrintS", "#", "for", "For", "equals", "getVar", "getVary", ";", "function", "{", "}", "/*", "/", "com", "round", "Round", "random", "createFile", "deleteFile"];
+let bik = ["write", "find", "vary", "import", "export", "modify", "Write", "Find", "Vary", "Import", "Export", "Modify", "showNkplDetails()", "sqrt", "Sqrt", "cbrt", "Cbrt", "printS", "PrintS", "#", "for", "For", "equals", "getVar", "getVary", ";", "function", "{", "}", "/*", "/", "com", "round", "Round", "random", "createFile", "deleteFile", "readFile", "getFileSizeInMB", "getFileSizeInGB", "getFileSizeInTB", "getFileSizeInKB", "getFileSizeInB", "getFileSize", "getCurrentYear", "getCurrentMonth", "getCurrentMonthName", "getCurrentDay", "return", "pass", "getCurrentDayName", "getCurrentDay", "getDate", "getTime", "getTimeWithS"];
 class nkplCompiler {
   constructor(codes) {
     this.codes = codes
