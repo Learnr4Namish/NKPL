@@ -1,0 +1,11 @@
+write "Hello There, My Name is Date Guesser and I am going to guess the date and time in your place now!";
+write "Your Time is:";
+getTime "12";
+write "By The way, Let's see what I can do more!";
+write "Your date is:";
+getDate "DD/MM/YYYY";
+write "This month is:";
+getCurrentMonthName
+write "Today is";
+getCurrentDayName
+write "That's all. Thank you.";
