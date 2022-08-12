@@ -8,7 +8,71 @@ const usage = "\nUsage: nkpl <file name>\nnamish <file name>";const options = ya
       .help(true)  
       .argv;
 const fileName = String(process.argv[2]);
-let bik = ["write", "find", "vary", "import", "export", "modify", "Write", "Find", "Vary", "Import", "Export", "Modify", "showNkplDetails()", "sqrt", "Sqrt", "cbrt", "Cbrt", "printS", "PrintS", "#", "for", "For", "equals", "getVar", "getVary", ";", "function", "{", "}", "/*", "/", "com", "round", "Round", "random", "createFile", "deleteFile", "readFile", "getFileSizeInMB", "getFileSizeInGB", "getFileSizeInTB", "getFileSizeInKB", "getFileSizeInB", "getFileSize", "getCurrentYear", "getCurrentMonth", "getCurrentMonthName", "getCurrentDay", "return", "pass", "getCurrentDayName", "getCurrentDay", "getDate", "getTime", "getTimeWithS"];
+let keywords = [
+  "write", 
+  "find", 
+  "vary", 
+  "import", 
+  "export", 
+  "modify", 
+  "Write", 
+  "Find", 
+  "Vary", 
+  "Import", 
+  "Export", 
+  "Modify",
+   "showNkplDetails()", 
+   "sqrt", 
+   "Sqrt", 
+   "cbrt", 
+   "Cbrt", 
+   "printS", 
+   "PrintS", 
+   "#", 
+   "for", 
+   "For", 
+   "equals", 
+   "getVar", 
+   "getVary", 
+   ";", 
+   "function", 
+   "{", "}", 
+   "/*", "/", 
+   "com", 
+   "round", 
+   "Round", 
+   "random", 
+   "createFile",
+    "deleteFile", 
+    "readFile", 
+    "getFileSizeInMB", 
+    "getFileSizeInGB", 
+    "getFileSizeInTB", 
+    "getFileSizeInKB", 
+    "getFileSizeInB", 
+    "getFileSize", 
+    "getCurrentYear", 
+    "getCurrentMonth",
+     "getCurrentMonthName", 
+     "getCurrentDay",
+      "return",
+       "pass", 
+       "getCurrentDayName", 
+       "getCurrentDay",
+        "getDate", 
+        "getTime", 
+        "getTimeWithS",
+        "renameFile",
+        "loop",
+        "reverse",
+        "randomd",
+        "object",
+        "class",
+        "bool",
+        "if",
+        "elseif",
+        "else"
+      ];
 class nkplCompiler {
   constructor(codes) {
     this.codes = codes
@@ -19,7 +83,7 @@ class nkplCompiler {
     let line = 1;
     let column = 0;
     let tokens = []
-    let BUILT_IN_KEYWORDS = bik;
+    let BUILT_IN_KEYWORDS = keywords;
     const varChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_()#N;{}'
     while (pos < length) {
       let currentChar = this.codes[pos]
@@ -105,6 +169,13 @@ class nkplCompiler {
         type: "operator",
         value: "comment"
       })
+      }else if(currentChar === ":"){
+        pos++
+        column++
+        tokens.push({
+          type:"colon",
+          value:"colon"
+        })
       } else {
         return {
           error: `Unexpected character ${this.codes[pos]} at line ${line}:${pos}`
@@ -140,7 +211,7 @@ allFileContents.split(/\r?\n/).forEach(codes =>  {
   });
     }
   }
-  const allFileContents = fs.readFileSync(fileName + ".nkpl", 'utf8');
+  const allFileContents = fs.readFileSync(fileName + ".nkpl" || fileName + ".namish", 'utf8');
 allFileContents.split(/\r?\n/).forEach(codes =>  {
   new nkplCompiler(codes).compile();
 });  

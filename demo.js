@@ -1,0 +1,1 @@
+console.log(Boolean(eval("2 > 5")))
