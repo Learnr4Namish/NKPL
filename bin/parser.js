@@ -1311,11 +1311,48 @@ allFileContents.split(/\r?\n/).forEach(fileValue =>  {
   const ipAddress = tokens[position + 2].value;
   try {
     if(port === "env") {
-      const server = app.listen(process.env.port, function onServerListening() {
+      const server = app.listen(process.env.port || 3001, ipAddress, function onServerListening() {
         console.log(`NKPL HTTP server: Server has successfully started at the environment port!`)
      });
      app.all('*', (req, res) => {
-      res.status(404).send('<h1>404! Page not found</h1>');
+      res.status(404).send(`<!DOCTYPE html>
+      <html>
+      <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>NKPL Server 404 error</title>
+      </head>
+      <style>
+      @import url('https://fonts.googleapis.com/css2?family=Lobster&family=Ubuntu:wght@500;700&display=swap');
+      body {
+        font-family: 'Lobster', cursive;
+font-family: 'Ubuntu', sans-serif;
+      }
+      html {
+        height:100%;
+        background-color:#ff0077;
+        color:white;
+        font-size:20px;
+      }
+      button {
+        background-color:#000000;
+        color:white;
+        border-radius:10px;
+        padding:5px;
+        width:10em;
+        border:none;
+        height:55px;
+        font-size:18px;
+      }
+      </style>
+      <body>
+      <h1>404 Not Found</h1>
+      <p>The requested url was not found on this server. Please go back to home. If you are the owner of this website, check that you have initiated "/" in your NKPL server.</p>
+      <a href="/">
+      <button>Go to Home</button>
+      </a>
+</body>
+</html>
+     `);
     });
     }else if(port === "undefined"){
         return console.error("NKPL HTTP Socket error: The port number can never be undefined!");
