@@ -1311,8 +1311,8 @@ allFileContents.split(/\r?\n/).forEach(fileValue =>  {
   const ipAddress = tokens[position + 2].value;
   try {
     if(port === "env") {
-      const server = app.listen(process.env.port, ipAddress, function onServerListening() {
-        console.log(`NKPL HTTP server: Server has successfully started at port ${port} and at ip address ${ipAddress}`)
+      const server = app.listen(process.env.port, function onServerListening() {
+        console.log(`NKPL HTTP server: Server has successfully started at the environment port!`)
      });
      app.all('*', (req, res) => {
       res.status(404).send('<h1>404! Page not found</h1>');
