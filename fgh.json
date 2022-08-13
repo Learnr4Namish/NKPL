@@ -1,0 +1,1 @@
+[{"type":"keyword","value":"if"},{"type":"string","value":"4 < 5"},{"type":"colon","value":"colon"},{"type":"keyword","value":"write"},{"type":"string","value":"Oh yes! 4 is smaller than 5!"},{"type":"keyword","value":";"}]

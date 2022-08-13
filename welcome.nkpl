@@ -1,1 +1,1 @@
-renameFile "home.nkpl" "main.nkpl";
+write "hello";

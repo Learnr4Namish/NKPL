@@ -1,5 +1,6 @@
 # NKPL
 <a href="https://nkpl.namishkumar.in">https://nkpl.namishkumar.in</a>
+<img src="https://namishkumar.in/storage/20220812_155835_0000.png" style="border-radius:5px;">
 <p>The Namish Kumar Programming Language is a programming language made by <b>Namish Kumar (Me) in July 2022</b>. The base language of this programming language is JavaScript. It has a simple syntax as compared to other programming languages. To use this programming language, You have to install Node JS in your system. That's all about NKPL.</p>
 <h1>Writing Your first NKPL program</h1>
 <p>Beginners might find this language easy. To get started, Let's create a file called main.nkpl and write the following codes in it:</p>
@@ -12,3 +13,5 @@
 <code>npm install -g nkpl</code>
 <code>nkpl --version</code>
 <p>Verify that the output is 2.2.1</p>
+<hr>
+<img src="https://namishkumar.in/storage/20220730_221140_0000.png" style="border-radius:5px;">

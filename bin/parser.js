@@ -1,6 +1,9 @@
 const { sqrt } = require("mathjs");
 const fs = require("fs");
 const Path = require('path')  
+const express = require("express");
+const bodyParser = require("body-parser");
+const app = express();
 const parser = {
   parse:function parse(tokens) {
     const nLength = tokens.length;
@@ -1284,6 +1287,115 @@ allFileContents.split(/\r?\n/).forEach(fileValue =>  {
      console.log()
   }
   }
+}else if(token.type === "keyword" && token.value === "newHTTPServer") {
+  if(tokens[position + 1] === undefined) {
+    return console.log("NKPL Syntax error: Cannot start empty HTTP statement!");
+  }else{
+    const isString = tokens[position + 1].type = "string";
+    if(!isString) {
+      if(!tokens[position + 1]) {
+        return console.log("NKPL Unexpected error: newHTTPServer expected ip address and port");
+      }
+      return console.log("NKPL Unexpected error: newHTTPServer expected ip address and port");
+    }
+    const port = tokens[position + 1].value;
+    const isString2 = String(tokens[position + 2].value);
+   //console.log(Boolean(eval(condition)));
+   //const isColon = tokens[position + 2].type === "colon" && tokens[position + 2].value === "colon";
+   if(!isString2) {
+    if(!tokens[position + 2]) {
+      return console.log("NKPL Unexpected error: newHTTPServer expected ip address and port");
+    }
+    return console.log("NKPL Unexpected error: newHTTPServer expected ip address and port");
+  }
+  const ipAddress = tokens[position + 2].value;
+  try {
+    if(port === "env") {
+      const server = app.listen(process.env.port, ipAddress, function onServerListening() {
+        console.log(`NKPL HTTP server: Server has successfully started at port ${port} and at ip address ${ipAddress}`)
+     });
+     app.all('*', (req, res) => {
+      res.status(404).send('<h1>404! Page not found</h1>');
+    });
+    }else if(port === "undefined"){
+        return console.error("NKPL HTTP Socket error: The port number can never be undefined!");
+    }else{
+      const server = app.listen(Number(port), ipAddress, function onServerListening() {
+         console.log(`NKPL HTTP server: Server has successfully started at port ${port} and at ip address ${ipAddress}`);
+        
+      });
+      app.all('*', (req, res) => {
+        res.status(404).send(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>NKPL Server 404 error</title>
+        </head>
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lobster&family=Ubuntu:wght@500;700&display=swap');
+        body {
+          font-family: 'Lobster', cursive;
+font-family: 'Ubuntu', sans-serif;
+        }
+        html {
+          height:100%;
+          background-color:#ff0077;
+          color:white;
+          font-size:20px;
+        }
+        button {
+          background-color:#000000;
+          color:white;
+          border-radius:10px;
+          padding:5px;
+          width:10em;
+          border:none;
+          height:55px;
+          font-size:18px;
+        }
+        </style>
+        <body>
+        <h1>404 Not Found</h1>
+        <p>The requested url was not found on this server. Please go back to home. If you are the owner of this website, check that you have initiated "/" in your NKPL server.</p>
+        <a href="/">
+        <button>Go to Home</button>
+        </a>
+</body>
+</html>
+        `);
+      });
+    }
+  }catch(error) {
+      return console.log("NKPL HTTP Socket error: The port number can never be undefined! Please try again!");
+  }
+
+  position += 3
+  }
+}else if(token.type === "keyword" && token.value === "doGET") {
+  const isString = tokens[position + 1].type === "string";
+   if(!isString) {
+     if(!tokens[position + 1]) {
+       return console.error("NKPL GET request error: Unable to GET the path! Please check that the path is a string");
+     }
+     return console.error("NKPL GET request error: Unable to GET the path! Please check that the path is a string!");
+   }
+   const path = tokens[position + 1].value;
+   const isColon = tokens[position + 2].type === "colon" && tokens[position + 2].value === "colon";
+   if(!isColon) {
+     if(!tokens[position + 2]) {
+        return console.log("NKPL HTTP Socket error: Unable to send GET responce! Expected colon but got empty string!")
+     }
+     return console.log("NKPL HTTP Socket error: Unable to send GET responce! Expected colon but got empty string!")
+   }
+  const responceText = tokens[position + 3].value;
+  console.log("Sharing content at the path " + path);
+  app.get(path, (req,res) => {
+    console.log(`NKPL HTTP server: Got GET request from ip address ${req.ip}`);
+    res.send(responceText);
+});
+position += 3;
+   position += 2
 }
        position++
     }
@@ -2565,7 +2677,9 @@ if(Boolean(eval(condition)) === true) {
  console.log("Condition is not satisfied!");
 }
 }
-}
+}/*else if(token.type === "keyword" && token.value === "writeResponse") { 
+   
+}*/
    position++
 }
 function searchObj (obj, query) {

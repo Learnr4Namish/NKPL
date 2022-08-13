@@ -71,7 +71,10 @@ let keywords = [
         "bool",
         "if",
         "elseif",
-        "else"
+        "else",
+        "newHTTPServer",
+        "doGET",
+        "writeResponce"
       ];
 class nkplCompiler {
   constructor(codes) {
