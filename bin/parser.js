@@ -5,10 +5,12 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const parser = {
-  parse:function parse(tokens) {
+  parse:function parse(tokens, fileName) {
+   // console.log(tokens);
     const nLength = tokens.length;
     let position = 0;
-    const vars = {}
+    const vars = {};
+    const objects = {};
     while (position < nLength) {
        let token = tokens[position];
        if(token.type === "keyword" && token.value === "write") {
@@ -28,10 +30,29 @@ const parser = {
             }
             return console.log("NKPL Variable error: getVar only accepts string!");
           }
-            if(!tokens[position + 3].value in vars) {
-              return console.log(`NKPL Variable Error: The requested variable ${tokens[position + 1].value} is not defined!`)
-            }
-            console.log(vars[tokens[position + 2].value])
+          /*const allFileContents1 = fs.readFileSync(fileName + "_variables.json");
+String(allFileContents1).split(/\r?\n/).forEach(codes =>  {
+  if(!tokens[position + 2].value in JSON.parse(codes)) {
+    return console.log(`NKPL Variable Error: The requested variable ${tokens[position + 1].value} is not defined!`)
+  }
+});  */
+            const variableNameToGet = tokens[position + 2].value;
+            const allFileContents = fs.readFileSync(fileName + "_variables.json");
+String(allFileContents).split(/\r?\n/).forEach(codes =>  {
+  if(codes === "") {
+     return console.log("NKPL Variable error: Unable to show any variable as there is no variable defined!");
+  }else{
+   goOnShowVariable(codes);
+  }
+});   
+function goOnShowVariable(codes) {
+   const mainObject = JSON.parse(codes);
+   if(mainObject[String(variableNameToGet)] === undefined) {
+     return console.log("NKPL Variable Error: No such variable! The variable is empty or undefined");
+   }else{
+    console.log(mainObject[String(variableNameToGet)]);
+   }
+}
          }else{
 
          }
@@ -40,7 +61,11 @@ const parser = {
        }else if(!tokens[position + 2] === ";") {
           return console.log("Unexpected end of line! Expected semicolon ';'");
        }
-       console.log(tokens[position + 1].value);
+       if(tokens[position + 1].type === "string") {
+        console.log(tokens[position + 1].value);
+       }else {
+      //return null;
+       }
          position += 2
        }else if(token.type === "keyword" && token.value === "vary") {
          const isCustomKeyWord = tokens[position + 1] && tokens[position + 1].type === "string";
@@ -66,10 +91,43 @@ const parser = {
           }
           return console.log(`Unexpected token ${tokens[position + 3].type}! Expected String!`)
          }
-      if(varyName in vars) {
-        return console.log(`NKPL Variable Error:- Variable ${varyName} already exists!`);
+         const variableVal = tokens[position + 3].value;
+         const allFileContents = fs.readFileSync(fileName + "_variables.json");
+String(allFileContents).split(/\r?\n/).forEach(codes =>  {
+  if(!codes === "") {
+     goOnCreateVariable(codes);
+  }else{
+    createSimpleVariable();
+  }
+});   
+
+ function goOnCreateVariable(codes) {
+     const mainObject = JSON.parse(codes);
+     mainObject[varyName] = variableVal;
+     const objToPush = JSON.stringify(mainObject);
+     fs.writeFile(fileName + "_variables.json", objToPush, 'utf8', (err) => { 
+      if(!err) {
+
+      }else{
+         return console.log("NKPL Variable error: Unable to create your variable! Please try again!");
       }
-      vars[varyName] = tokens[position + 3].value;
+     });
+ }
+ function createSimpleVariable() {
+  let mainObject = {};
+  mainObject[varyName] = variableVal;
+     const objToPush = JSON.stringify(mainObject);
+     fs.writeFile(fileName + "_variables.json", objToPush, 'utf8', (err) => { 
+      if(!err) {
+
+      }else{
+         return console.log("NKPL Variable error: Unable to create your variable! Please try again!");
+      }
+     });
+ }
+  //fs.appendFile(`${fileName}_variables.json`, `{"${varyName}":"${tokens[position + 3].value}"}`, function ssCallback() {
+
+  //})*/
       position+= 4;
        }else if(token.type === "keyword" && token.value === "com") {
          const valueIsString = tokens[position + 1].type === "string";
@@ -1433,6 +1491,187 @@ font-family: 'Ubuntu', sans-serif;
 });
 position += 3;
    position += 2
+}else if(token.type === "keyword" && token.value === "object") {
+    const isString = tokens[position + 1].type = "string";
+    if(!isString) {
+       if(!tokens[position + 1]) {
+        return console.log("NKPL Object error: Object keyword expected string after it!");
+       }
+       return console.log("NKPL Object error: Object keyword expected string after it!");
+    }
+    const objectName = tokens[position + 1].value;
+    const isColon = tokens[position + 2].type === "colon" && tokens[position + 2].value === "colon";
+    if(!isColon) {
+       if(!tokens[position + 2]) {
+         return console.log("NKPL Object error: Expected a colon ':' after object name!");
+       }
+       return console.log("NKPL Object error: Expected a colon ':' after object name!");
+    }
+    const isString2 = tokens[position + 3].type = "string";
+    if(!isString) {
+       if(!tokens[position + 3]) {
+        return console.log("NKPL Object error: Object keyword expected string after colon!");
+       }
+       return console.log("NKPL Object error: Object keyword expected string after colon!");
+    }
+    const mainObject = tokens[position + 3].value;
+    try {
+      const hObject = JSON.parse(mainObject);
+      fs.writeFile("objects/" + fileName + "_objects.json", JSON.stringify(hObject), 'utf8', (err) => {
+        if (err) {
+            console.log(err);
+        } else {
+          const allFileContents = fs.readFileSync(fileName + "_objects.json", 'utf8');
+  allFileContents.split(/\r?\n/).forEach(codes =>  {
+     console.log(codes)
+  }); 
+        }
+    
+    });
+    }catch(error) {
+      return console.log("NKPL Object parse error: Unable to parse your object! Please check that the syntax is correct and try again!")
+    }
+}else if(token.type === "keyword" && token.value === "getMax") {
+   const isString = tokens[position + 1].type === "string";
+   if(!isString) {
+     if(!tokens[position + 1]) {
+       return console.log("NKPL Syntax error: getMax keyword requires string!");
+     }
+     return console.log("NKPL Syntax error: getMax keyword requires string!");
+   }
+  const numbers = tokens[position + 1].value;
+  const aNumbers = String(numbers).split(",");
+  for(let x = 0; x <= aNumbers.length - 1; x++) {
+    aNumbers[x] = Number(aNumbers[x])
+  }
+  Array.prototype.max = function() {
+    return Math.max.apply(null, this);
+  }
+  Array.prototype.min = function() {
+    return Math.min.apply(null, this);
+  }
+  console.log(aNumbers.max())
+   if(tokens[position + 2] === undefined) {
+    return console.log("NKPL error: Unexpected end of line! Expected semicolon ';'");
+ }else if(!tokens[position + 2] === ";") {
+    return console.log("NKPL error: Unexpected end of line! Expected semicolon ';'");
+ }else{
+   position += 3
+ }
+}else if(token.type === "keyword" && token.value === "getMin") {
+  const isString = tokens[position + 1].type === "string";
+  if(!isString) {
+    if(!tokens[position + 1]) {
+      return console.log("NKPL Syntax error: getMin keyword requires string!");
+    }
+    return console.log("NKPL Syntax error: getMin keyword requires string!");
+  }
+ const numbers = tokens[position + 1].value;
+ const aNumbers = String(numbers).split(",");
+ for(let x = 0; x <= aNumbers.length - 1; x++) {
+   aNumbers[x] = Number(aNumbers[x])
+ }
+ Array.prototype.max = function() {
+   return Math.max.apply(null, this);
+ }
+ Array.prototype.min = function() {
+   return Math.min.apply(null, this);
+ }
+ console.log(aNumbers.min())
+  if(tokens[position + 2] === undefined) {
+   return console.log("NKPL error: Unexpected end of line! Expected semicolon ';'");
+}else if(!tokens[position + 2] === ";") {
+   return console.log("NKPL error: Unexpected end of line! Expected semicolon ';'");
+}else{
+  position += 3
+}
+}else if(token.type === "keyword" && token.value === "getLog") {
+  const isString = tokens[position + 1].type === "string";
+  if(!isString) {
+    if(!tokens[position + 1]) {
+      return console.log("NKPL Syntax error: getLog keyword requires string!");
+    }
+    return console.log("NKPL Syntax error: getLog keyword requires string!");
+  }
+  const mainNumber = tokens[position + 1].value;
+  console.log(Math.log(Number(mainNumber)));
+  if(tokens[position + 2] === undefined) {
+    return console.log("NKPL error: Unexpected end of line! Expected semicolon ';'");
+ }else if(!tokens[position + 2] === ";") {
+    return console.log("NKPL error: Unexpected end of line! Expected semicolon ';'");
+ }else{
+   position += 3
+ }
+}else if(token.type === "keyword" && token.value === "getPI") {
+   console.log(Math.PI);
+}else if(token.type === "keyword" && token.value === "getAbs") {
+  const isString = tokens[position + 1].type === "string";
+  if(!isString) {
+    if(!tokens[position + 1]) {
+      return console.log("NKPL Syntax error: getAbs keyword requires string!");
+    }
+    return console.log("NKPL Syntax error: getAbs keyword requires string!");
+  }
+  const mainNumber = tokens[position + 1].value;
+   console.log(Math.abs(Number(mainNumber)));
+   if(tokens[position + 2] === undefined) {
+    return console.log("NKPL error: Unexpected end of line! Expected semicolon ';'");
+ }else if(!tokens[position + 2] === ";") {
+    return console.log("NKPL error: Unexpected end of line! Expected semicolon ';'");
+ }else{
+   position += 3
+ }
+}else if(token.type === "keyword" && token.value === "getSin") {
+  const isString = tokens[position + 1].type === "string";
+  if(!isString) {
+    if(!tokens[position + 1]) {
+      return console.log("NKPL Syntax error: getSin keyword requires string!");
+    }
+    return console.log("NKPL Syntax error: getSin keyword requires string!");
+  }
+  const mainNumber = tokens[position + 1].value;
+   console.log(Math.sin(Number(mainNumber)));
+   if(tokens[position + 2] === undefined) {
+    return console.log("NKPL error: Unexpected end of line! Expected semicolon ';'");
+ }else if(!tokens[position + 2] === ";") {
+    return console.log("NKPL error: Unexpected end of line! Expected semicolon ';'");
+ }else{
+   position += 3
+ }
+}else if(token.type === "keyword" && token.value === "getCos") {
+  const isString = tokens[position + 1].type === "string";
+  if(!isString) {
+    if(!tokens[position + 1]) {
+      return console.log("NKPL Syntax error: getCos keyword requires string!");
+    }
+    return console.log("NKPL Syntax error: getCos keyword requires string!");
+  }
+  const mainNumber = tokens[position + 1].value;
+   console.log(Math.cos(Number(mainNumber)));
+   if(tokens[position + 2] === undefined) {
+    return console.log("NKPL error: Unexpected end of line! Expected semicolon ';'");
+ }else if(!tokens[position + 2] === ";") {
+    return console.log("NKPL error: Unexpected end of line! Expected semicolon ';'");
+ }else{
+   position += 3
+ }
+}else if(token.type === "keyword" && token.value === "getTan") {
+  const isString = tokens[position + 1].type === "string";
+  if(!isString) {
+    if(!tokens[position + 1]) {
+      return console.log("NKPL Syntax error: getTan keyword requires string!");
+    }
+    return console.log("NKPL Syntax error: getTan keyword requires string!");
+  }
+  const mainNumber = tokens[position + 1].value;
+   console.log(Math.tan(Number(mainNumber)));
+   if(tokens[position + 2] === undefined) {
+    return console.log("NKPL error: Unexpected end of line! Expected semicolon ';'");
+ }else if(!tokens[position + 2] === ";") {
+    return console.log("NKPL error: Unexpected end of line! Expected semicolon ';'");
+ }else{
+   position += 3
+ }
 }
        position++
     }
@@ -2481,7 +2720,7 @@ if(tokens[position + 2] === undefined) {
 }else{
 position += 3
 }
-}else if(token.type === "keyword" && token.value === "getCurrentYear") {
+}else if(tokens[position + 3].type === "keyword" && tokens[position + 3].value === "getCurrentYear") {
 const date = new Date();
 const fullYear = date.getFullYear();
 console.log(fullYear)

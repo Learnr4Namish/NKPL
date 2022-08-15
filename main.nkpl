@@ -1,3 +1,2 @@
-newHTTPServer "80" "0.0.0.0";
-doGET "/": "This is first path";
-doGET "/namish": "Hello, I am Namish";
+vary "x" = "namish";
+write getVar "x";

@@ -1,1 +1,1 @@
-[{"type":"keyword","value":"doGET"},{"type":"string","value":"/namish"},{"type":"colon","value":"colon"},{"type":"string","value":"Hello, I am Namish"},{"type":"keyword","value":";"}]
+[{"type":"keyword","value":"vary"},{"type":"string","value":"x"},{"type":"operator","value":"eq"},{"type":"string","value":"namish"},{"type":"keyword","value":";"}]

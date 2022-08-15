@@ -74,11 +74,21 @@ let keywords = [
         "else",
         "newHTTPServer",
         "doGET",
-        "writeResponce"
+        "writeResponce",
+        "getObject",
+        "getMax",
+        "getMin",
+        "getLog",
+        "getPI",
+        "getAbs",
+        "getSin",
+        "getCos",
+        "getTan"
       ];
 class nkplCompiler {
-  constructor(codes) {
-    this.codes = codes
+  constructor(codes, fileName) {
+    this.codes = codes;
+    this.fileName = fileName;
   }
   tokenize() {
     const length = this.codes.length
@@ -120,11 +130,11 @@ class nkplCompiler {
       } else if (currentChar === "'") {
         let res = ""
         pos++
-        while (this.codes[pos] !== '"' && this.codes[pos] !== '\n' && pos < length) {
+        while (this.codes[pos] !== "'" && this.codes[pos] !== '\n' && pos < length) {
           res += this.codes[pos]
           pos++
         }
-        if (this.codes[pos] !== '"') {
+        if (this.codes[pos] !== "'") {
           return {
             error: `Incomplete String at line ${line}:${pos}!`
           }
@@ -134,7 +144,7 @@ class nkplCompiler {
           type: "string",
           value: res
         })
-      } 
+      }
       else if (varChars.includes(currentChar)) {
         let res = currentChar
         pos++
@@ -207,7 +217,7 @@ class nkplCompiler {
       } else {
         const allFileContents = fs.readFileSync(fileName + ".json", 'utf8');
 allFileContents.split(/\r?\n/).forEach(codes =>  {
-  nkplParser.parse(tokens);
+  nkplParser.parse(tokens, fileName);
 }); 
       }
   
@@ -216,7 +226,7 @@ allFileContents.split(/\r?\n/).forEach(codes =>  {
   }
   const allFileContents = fs.readFileSync(fileName + ".nkpl" || fileName + ".namish", 'utf8');
 allFileContents.split(/\r?\n/).forEach(codes =>  {
-  new nkplCompiler(codes).compile();
+  new nkplCompiler(codes, fileName).compile();
 });  
 /*fs.readFile(fileName + ".nkpl", 'utf8', function(err, codes){
 new nkplCompiler(codes).compile();
