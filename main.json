@@ -1,1 +1,1 @@
-[{"type":"keyword","value":"vary"},{"type":"string","value":"x"},{"type":"operator","value":"eq"},{"type":"string","value":"namish"},{"type":"keyword","value":";"}]
+[{"type":"keyword","value":"getPercent"},{"type":"operator","value":"eq"},{"type":"lambda","value":"lambda"},{"type":"keyword","value":"parts"},{"type":"string","value":"500"},{"type":"keyword","value":"total"},{"type":"string","value":"500"},{"type":"keyword","value":";"}]

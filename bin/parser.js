@@ -1,9 +1,12 @@
-const { sqrt } = require("mathjs");
+const { sqrt, string } = require("mathjs");
 const fs = require("fs");
 const Path = require('path')  
 const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
+function writeError(string) {
+   return console.error(`NKPL Error: ${string}`);
+}
 const parser = {
   parse:function parse(tokens, fileName) {
    // console.log(tokens);
@@ -37,14 +40,18 @@ String(allFileContents1).split(/\r?\n/).forEach(codes =>  {
   }
 });  */
             const variableNameToGet = tokens[position + 2].value;
+           try {
             const allFileContents = fs.readFileSync(fileName + "_variables.json");
-String(allFileContents).split(/\r?\n/).forEach(codes =>  {
-  if(codes === "") {
-     return console.log("NKPL Variable error: Unable to show any variable as there is no variable defined!");
-  }else{
-   goOnShowVariable(codes);
-  }
-});   
+            String(allFileContents).split(/\r?\n/).forEach(codes =>  {
+              if(codes === "") {
+                return console.log(null);
+              }else{
+                goOnShowVariable(codes)
+              }
+            });  
+           }catch(error) {
+               writeError(error);
+           }
 function goOnShowVariable(codes) {
    const mainObject = JSON.parse(codes);
    if(mainObject[String(variableNameToGet)] === undefined) {
@@ -92,14 +99,21 @@ function goOnShowVariable(codes) {
           return console.log(`Unexpected token ${tokens[position + 3].type}! Expected String!`)
          }
          const variableVal = tokens[position + 3].value;
-         const allFileContents = fs.readFileSync(fileName + "_variables.json");
-String(allFileContents).split(/\r?\n/).forEach(codes =>  {
-  if(!codes === "") {
-     goOnCreateVariable(codes);
-  }else{
-    createSimpleVariable();
-  }
-});   
+        try {
+          const allFileContents = fs.readFileSync(fileName + "_variables.json");
+          continueMore();
+        }catch(error) {
+           createSimpleVariable();
+        }
+function continueMore() {
+  String(allFileContents).split(/\r?\n/).forEach(codes =>  {
+    if(!codes === "") {
+       goOnCreateVariable(codes);
+    }else{
+      createSimpleVariable();
+    }
+  });
+}   
 
  function goOnCreateVariable(codes) {
      const mainObject = JSON.parse(codes);
@@ -1671,6 +1685,54 @@ position += 3;
     return console.log("NKPL error: Unexpected end of line! Expected semicolon ';'");
  }else{
    position += 3
+ }
+}else if(token.type === "keyword" && token.value === "getPercent") {
+  const isEqualSign = tokens[position + 1].type === "operator" && tokens[position + 1].value === "eq";
+  if(!isEqualSign) {
+    if(!tokens[position + 1]) {
+      return console.log("NKPL Syntax error: getPercent keyword requires promise sign '=>'");
+    }
+    return console.log("NKPL Syntax error: getPercent keyword requires promise sign '=>'");
+  }
+  const isLambda = tokens[position + 2].type === "lambda" && tokens[position + 2].value === "lambda";
+  if(!isLambda) {
+    if(!tokens[position + 2]) {
+      return console.log("NKPL Syntax error: getPercent keyword requires promise sign '=>'");
+    }
+    return console.log("NKPL Syntax error: getPercent keyword requires promise sign '=>'");
+  }
+  const isPart = tokens[position + 3].type === "keyword" && tokens[position + 3].value === "parts";
+ // const isTotalFst = tokens[position + 3].type === "keyword" && tokens[position + 3].value === "total";
+  if(!isPart) {
+      if(!tokens[position + 3]) {
+         writeError("expected part numbers but got null!");
+      }
+      writeError("expected part numbers but got null!");
+  }
+  const isStringParts = tokens[position + 4].type === "string";
+  if(!isStringParts) {
+     if(!tokens[position + 4]) {
+       writeError("expected string in parts!");
+     }
+     writeError("expected string in parts!");
+  }
+  const totalParts = tokens[position + 4].value;
+  const isTotal = tokens[position + 5].type === "keyword" && tokens[position + 5].value === "total";
+  const isStringParts2 = tokens[position + 6].type === "string";
+  if(!isStringParts2) {
+     if(!tokens[position + 4]) {
+       writeError("expected string in parts!");
+     }
+     writeError("expected string in parts!");
+  }
+  const totalAmount = tokens[position + 6].value;
+  console.log(`${Number(Number(totalParts)/Number(totalAmount) * 100)}%`)
+   if(tokens[position + 7] === undefined) {
+    return console.log("NKPL error: Unexpected end of line! Expected semicolon ';'");
+ }else if(!tokens[position + 7] === ";") {
+    return console.log("NKPL error: Unexpected end of line! Expected semicolon ';'");
+ }else{
+   position += 8
  }
 }
        position++

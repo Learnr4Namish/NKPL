@@ -83,7 +83,11 @@ let keywords = [
         "getAbs",
         "getSin",
         "getCos",
-        "getTan"
+        "getTan",
+        "getPercent",
+        "parts",
+        "total",
+        "fetchAPI"
       ];
 class nkplCompiler {
   constructor(codes, fileName) {
@@ -189,7 +193,14 @@ class nkplCompiler {
           type:"colon",
           value:"colon"
         })
-      } else {
+      }else if(currentChar === ">"){
+        pos++
+        column++
+        tokens.push({
+          type:"lambda",
+          value:"lambda",
+        })
+      }  else {
         return {
           error: `Unexpected character ${this.codes[pos]} at line ${line}:${pos}`
         }

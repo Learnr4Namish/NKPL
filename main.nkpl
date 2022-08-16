@@ -1,2 +1,5 @@
-vary "x" = "namish";
-write getVar "x";
+write "What is the percent when you score 500/500 in a text!";
+com "See what happens up next!";
+write "Answer =>";
+com "This will print the percentage!";
+getPercent => parts "500" total "500";

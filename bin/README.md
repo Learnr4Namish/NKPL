@@ -12,6 +12,6 @@
 <p>To install NKPL, make sure that you have installed nodejs in your system and then in a terminal window, run the following command</p>
 <code>npm install -g nkpl</code>
 <code>nkpl --version</code>
-<p>Verify that the output is 3.2.0</p>
+<p>Verify that the output is 3.2.1</p>
 <hr>
 <img src="https://namishkumar.in/storage/20220730_221140_0000.png" style="border-radius:5px;">
