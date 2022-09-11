@@ -1,6 +1,6 @@
 {
   "name": "nkpl",
-  "version": "3.2.1",
+  "version": "3.6.1",
   "description": "The Namish Kumar Programming Language is a programming language made by Namish Kumar in July 2022. The base language of this programming language is JavaScript. It has a simple syntax as compared to other programming languages. To use this programming language, You have to install Node JS in your system. That's all about NKPL.",
   "main": "index.js",
   "scripts": {
@@ -8,8 +8,9 @@
     "start": "node ./bin/index.js"
   },
   "bin": {
-    "nkpl": "./bin/index.js",
-    "namish": "./bin/index.js"
+    "nkpl": "node ./bin/index.js",
+    "namish": "node ./bin/index.js",
+    "compiler": "./bin/index.js"
   },
   "keywords": [
     "Programming_Language",

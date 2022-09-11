@@ -5,13 +5,13 @@
 <h1>Writing Your first NKPL program</h1>
 <p>Beginners might find this language easy. To get started, Let's create a file called main.nkpl and write the following codes in it:</p>
 <br>
-<code>write "Hello World"</code>
+<code>write "Hello World";</code>
 <br>
 <p>You'll see this write hello world in the console</p>
 <h1>Installation</h1>
 <p>To install NKPL, make sure that you have installed nodejs in your system and then in a terminal window, run the following command</p>
 <code>npm install -g nkpl</code>
 <code>nkpl --version</code>
-<p>Verify that the output is 3.2.1</p>
+<p>Verify that the output is 3.6.1</p>
 <hr>
 <img src="https://namishkumar.in/storage/20220730_221140_0000.png" style="border-radius:5px;">

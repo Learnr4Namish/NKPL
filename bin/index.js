@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const nkplParser = require("./parser.js");
 const yargs = require("yargs");
 const fs = require("fs");
@@ -12,12 +13,21 @@ let keywords = [
   "write", 
   "find", 
   "vary", 
-  "import", 
+  "import",
+  "nkpl",
+  "lang",
+  "system",
+  "create",
+  "new",
+  "keyword",
+  "using",
+  "namespace", 
   "export", 
   "modify", 
   "Write", 
   "Find", 
-  "Vary", 
+  "Vary",
+  "void", 
   "Import", 
   "Export", 
   "Modify",
@@ -65,6 +75,7 @@ let keywords = [
         "renameFile",
         "loop",
         "reverse",
+        "reverseValue",
         "randomd",
         "object",
         "class",
@@ -87,8 +98,26 @@ let keywords = [
         "getPercent",
         "parts",
         "total",
-        "fetchAPI"
-      ];
+        "fetchAPI",
+        "initDB",
+        "writeDB",
+        "getDB",
+        "getObject",
+        "getChar",
+        "getInput",
+        "inputValue",
+        "writeValue",
+        "index",
+        "string",
+        "getStatus",
+        "()",
+        "main",
+        "true",
+        "false",
+        "getOS",
+        "property",
+        "getObject"
+];
 class nkplCompiler {
   constructor(codes, fileName) {
     this.codes = codes;
@@ -109,7 +138,6 @@ class nkplCompiler {
         column++
         continue
       }else if(currentChar === "\n"){
-          line++
           column = 0;
           pos++
           continue
@@ -200,6 +228,13 @@ class nkplCompiler {
           type:"lambda",
           value:"lambda",
         })
+      }else if(currentChar === ","){
+        pos++
+        column++
+        tokens.push({
+          type:"comma",
+          value:"comma",
+        })
       }  else {
         return {
           error: `Unexpected character ${this.codes[pos]} at line ${line}:${pos}`
@@ -228,7 +263,7 @@ class nkplCompiler {
       } else {
         const allFileContents = fs.readFileSync(fileName + ".json", 'utf8');
 allFileContents.split(/\r?\n/).forEach(codes =>  {
-  nkplParser.parse(tokens, fileName);
+  nkplParser.parse(tokens, fileName, keywords);
 }); 
       }
   
