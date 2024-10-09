@@ -1,0 +1,3 @@
+write "Welcome to my-server! This program is going to start a http-server!";
+newHTTPServer "8000" "localhost";
+doGET: "Hello World! This is <b>my-server</b>";
